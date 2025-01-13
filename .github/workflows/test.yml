@@ -6,7 +6,7 @@ on:
       build_arch:
         required: true
         type: string
-        default: 'all'
+        default: 'x86_64'
   pull_request:
     paths-ignore:
       - "**/*.asciidoc"
@@ -33,12 +33,12 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
-      build_arch: all
+      build_arch: x86_64
 
   setup-build-matrix:
     uses: ./.github/workflows/build-arch-matrix-generator.yml
     with:
-      build_arch: all
+      build_arch: x86_64
 
   phpt-tests:
     name: phpt-tests
@@ -58,6 +58,7 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
+          - "8.4"
         data: ${{ fromJson(needs.setup-build-matrix.outputs.matrix-combinations).include }}
     env:
       PHP_VERSION: ${{ matrix.php-version }}
@@ -90,6 +91,7 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
+          - "8.4"
         dockerfile:
           - "Dockerfile"
           - "Dockerfile.alpine"

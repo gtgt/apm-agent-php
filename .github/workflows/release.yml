@@ -19,7 +19,8 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
-      build_arch: all
+      # all
+      build_arch: x86_64
 
   build-packages:
     permissions:

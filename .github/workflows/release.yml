@@ -16,17 +16,6 @@ env:
 
 jobs:
 
-  release-started:
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags')
-    steps:
-      - uses: elastic/oblt-actions/slack/send@v1
-        with:
-          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel-id: "#apm-agent-php"
-          message: |
-            :runner: [${{ github.repository }}] Release *${{ github.ref_name }}* has been triggered : (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|here> for further details)
-
   build:
     uses: ./.github/workflows/build.yml
     with:
@@ -67,39 +56,13 @@ jobs:
         run: zip -r packages.zip packages/
         working-directory: build
 
-      - uses: elastic/oblt-actions/google/auth@v1
-        with:
-          project-number: '911195782929'
-
-      - id: 'upload-file'
-        uses: 'google-github-actions/upload-cloud-storage@v2'
-        with:
-          path: "${{ env.BUILD_PACKAGES }}.zip"
-          destination: "${{ env.BUCKET_NAME }}/${{ github.run_id }}"
-
-      - id: buildkite-run
-        uses: elastic/oblt-actions/buildkite/run@v1
-        with:
-          token: ${{ secrets.BUILDKITE_TOKEN }}
-          pipeline: observability-robots-php-release
-          wait-for: true
-          env-vars: |
-            BUNDLE_URL=https://storage.googleapis.com/${{ env.BUCKET_NAME }}/${{ steps.upload-file.outputs.uploaded }}
-
-      - uses: elastic/oblt-actions/buildkite/download-artifact@v1
-        with:
-          build-number: ${{ steps.buildkite-run.outputs.number }}
-          path: signed-artifacts.zip
-          pipeline: ${{ steps.buildkite-run.outputs.pipeline }}
-          token: ${{ secrets.BUILDKITE_TOKEN }}
-
       # this artifact name is used also in some other places,
       # such as ./.github/workflows/test-packages.yml.
       # Therefore v4 cannot be used at the moment.
       - uses: actions/upload-artifact@v4
         with:
           name: signed-artifacts
-          path: signed-artifacts.zip
+          path: ${{ env.BUILD_PACKAGES }}.zip
 
   generate-test-packages-matrix:
     if: startsWith(github.ref, 'refs/tags')
@@ -153,26 +116,3 @@ jobs:
       - name: Publish release
         if: startsWith(github.ref, 'refs/tags')
         run: make -f .ci/Makefile github-release-ready
-
-  notify:
-    if: always()
-    needs:
-      - build
-      - build-packages
-      - generate-test-packages-matrix
-      - release
-      - sign
-      - test-packages
-    runs-on: ubuntu-latest
-    steps:
-      - id: check
-        uses: elastic/oblt-actions/check-dependent-jobs@v1
-        with:
-          jobs: ${{ toJSON(needs) }}
-      - if: startsWith(github.ref, 'refs/tags')
-        uses: elastic/oblt-actions/slack/notify-result@v1
-        with:
-          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel-id: "#apm-agent-php"
-          status: ${{ steps.check.outputs.status }}
-          message: "[${{ github.repository }}] Release (<${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}|${{ github.ref_name }}>)"

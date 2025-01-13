@@ -80,11 +80,6 @@ function install_conf_d_files() {
         if [ -d "${CLI_CONF_D_PATH}" ]; then
             SAPI_CONFIG_DIRS+=("${CLI_CONF_D_PATH}")
         fi
-        # Apache
-        APACHE_CONF_D_PATH="${SAPI_DIR}apache2/conf.d"
-        if [ -d "${APACHE_CONF_D_PATH}" ]; then
-            SAPI_CONFIG_DIRS+=("${APACHE_CONF_D_PATH}")
-        fi
         ## FPM
         FPM_CONF_D_PATH="${SAPI_DIR}fpm/conf.d"
         if [ -d "${FPM_CONF_D_PATH}" ]; then
@@ -205,11 +200,12 @@ function is_php_supported() {
         [ "${PHP_MAJOR_MINOR}" == "8.0" ] || \
         [ "${PHP_MAJOR_MINOR}" == "8.1" ] || \
         [ "${PHP_MAJOR_MINOR}" == "8.2" ] || \
-        [ "${PHP_MAJOR_MINOR}" == "8.3" ]
+        [ "${PHP_MAJOR_MINOR}" == "8.3" ] || \
+        [ "${PHP_MAJOR_MINOR}" == "8.4" ]
     then
         return 0
     else
-        echo 'Failed. The supported PHP versions are 7.2-8.3.'
+        echo 'Failed. The supported PHP versions are 7.2-8.4.'
         return 1
     fi
 }

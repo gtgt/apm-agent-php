@@ -1,12 +1,12 @@
 SHELL = /bin/bash
 MAKEFLAGS += --no-print-directory
 IMAGE:=php-packaging
-IMAGE_TAG:=latest
+IMAGE_TAG:=native-build-gcc-12.2.0-linuxmusl-x86-64-0.0.2
 NAME:=apm-agent-php
-VERSION?=$(shell grep 'VERSION' ../agent/php/ElasticApm/ElasticApm.php | cut -d= -f2 | tr -d " " | sed "s/'\(.*\)'.*/\1/g")
+VERSION?=$(shell grep 'VERSION' agent/php/ElasticApm/ElasticApm.php | cut -d= -f2 | tr -d " " | sed "s/'\(.*\)'.*/\1/g")
 OUTPUT:=build/packages
 PHP_AGENT_DIR:=/opt/elastic/apm-agent-php
-PHP_VERSION?=7.2
+PHP_VERSION?=8.4
 SEL_DISTRO?=buster
 GIT_SHA?=$(shell git rev-parse HEAD || echo "unknown")
 RELEASE_VERSION?=

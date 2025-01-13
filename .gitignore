@@ -36,6 +36,7 @@ html_docs
 
 # Packaging artifacts and generated unit test reports
 build/
+apm-agent-php-*
 
 # Backup files when using sed
 .bck
@@ -48,3 +49,6 @@ _TEMP/
 
 # Native build folder
 agent/native/_build/
+
+# SHA files
+.sha*

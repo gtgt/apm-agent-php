@@ -49,7 +49,7 @@ mkdir -p /tmp/extensions
 cp ${BUILD_EXT_DIR}/*.so /tmp/extensions/
 cp ${BUILD_LOADER_DIR}/*.so /tmp/extensions/
 
-fpm --input-type dir \
+echo fpm --input-type dir \
 		--output-type "${TYPE}" \
 		--name "${NAME}" \
 		--version "${VERSION}" \
